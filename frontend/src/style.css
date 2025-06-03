@@ -26,44 +26,191 @@ body {
 }
 
 .container {
-  max-width: 900px;
+  min-height: 0vh;
+  background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+  padding: 24px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+.maxWidth {
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 20px;
-  font-family: sans-serif;
 }
-
-.title {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-}
-
-.section {
+.header {
   display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32px;
 }
-
-.circle-container {
+.headerTitle {
+  font-size: 32px;
+  font-weight: bold;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+}
+.headerSubtitle {
+  color: #6b7280;
+  margin-top: 8px;
+  font-size: 16px;
+}
+.progressGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 32px;
+  margin-bottom: 32px;
+}
+.progressCard {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+}
+.progressCardTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.progressCardContent {
+  display: flex;
+  justify-content: center;
+}
+.circularProgressContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.circularProgressWrapper {
   position: relative;
-  display: inline-block;
-  padding-top: 25px;
-  width: 100%;
 }
-.chart-title {
+.circularProgressSvg {
+  transform: rotate(-90deg);
+}
+.progressCircle {
+  transition: all 0.5s ease-out;
+}
+.progressText {
   position: absolute;
+  top: 0;
   left: 0;
   right: 0;
-  top: -23px;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
-.circle-container svg {
-  display: block;
-}
-.circle-label {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 1rem;
+.progressPercentage {
+  font-size: 24px;
   font-weight: bold;
-  color: white;
+  color: #1f2937;
+}
+.progressValue {
+  font-size: 14px;
+  color: #6b7280;
+}
+.progressLabel {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+.chartCard {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  margin-bottom: 32px;
+}
+.chartTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 24px;
+}
+.chartContainer {
+  height: 256px;
+}
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+.infoCard {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  gap: 12px;
+}
+.infoCardIcon {
+  width: 32px;
+  height: 32px;
+}
+.infoCardTitle {
+  font-size: 14px;
+  color: #6b7280;
+}
+.infoCardValue {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+.cpuDetailsCard {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  margin-top: 32px;
+}
+.cpuDetailsTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+.cpuDetailsContent {
+  background-color: #f9fafb;
+  border-radius: 8px;
+  padding: 16px;
+}
+.cpuModelLabel {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+.cpuModelName {
+  font-size: 18px;
+  font-family: Monaco, Consolas, "Lucida Console", monospace;
+  color: #1f2937;
+}
+.cpuDetailsGrid {
+  display: flex;
+  gap: 48px;
+  margin-top: 16px;
+}
+.cpuDetailItem {
+  display: flex;
+  flex-direction: column;
+}
+.cpuDetailLabel {
+  font-size: 14px;
+  color: #6b7280;
+}
+.cpuDetailValue {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
 }
