@@ -30,44 +30,58 @@ func (a *App) Greet(name string) string {
 	return fmt.Sprintf("Hello %s, It's show time!", name)
 }
 
-type Resources struct {
-	TotalMemory float64      `json:"totalMemory"`
+type StatsT struct {
 	MemoryAvailable float64  `json:"memoryAvailable"`
 	MemoryUsed float64       `json:"memoryUsed"`
 	MemoryPercentage float64 `json:"memoryPercentage"`
-	CPU int32                `json:"cpu"`
 	CpuPercentage float64       `json:"cpuPercentage"`
+}
+
+type InfoT struct {
 	CpuThreads int           `json:"cpuThreads"`
 	CpuModel string          `json:"cpuModel"`
 	CpuCores int32           `json:"cpuCores"`
 	CpuModelName string      `json:"cpuModelName"`
 	CpuGhz float64           `json:"cpuGhz"`
 	CpuCacheSize int32       `json:"cpuCacheSize"`
+	CPU int32                `json:"cpu"`
+	TotalMemory float64      `json:"totalMemory"`
 }
 
-func (a *App) Test() Resources {
-	cpus, err := cpu.Info()
+func (a *App) Stats() StatsT {
 	cpuPercent, err := cpu.Percent(0, false)
-	logicalCores, err := cpu.Counts(true)
 	vm, err := mem.VirtualMemory()
 	
 	if err != nil {
 		panic(err)
 	}
 
-	return Resources{
+	return StatsT{
+		CpuPercentage: math.Trunc(cpuPercent[0] * 100) / 100,
+		MemoryAvailable: bToGb(vm.Available),
+		MemoryUsed: bToGb(vm.Used),
+		MemoryPercentage: math.Trunc(vm.UsedPercent * 100) / 100,
+	}
+}
+
+func (a *App) Info() InfoT {
+	logicalCores, err := cpu.Counts(true)
+	cpus, err := cpu.Info()
+	vm, err := mem.VirtualMemory()
+
+	if err != nil {
+		panic(err)
+	}
+
+	return InfoT{
+		CpuThreads: logicalCores,
+		TotalMemory: bToGb(vm.Total),
 		CPU: cpus[0].CPU,
 		CpuModelName: cpus[0].ModelName,
 		CpuModel: cpus[0].Model,
 		CpuCores: cpus[0].Cores,
 		CpuGhz: cpus[0].Mhz / 1000,
 		CpuCacheSize: cpus[0].CacheSize,
-		CpuPercentage: math.Trunc(cpuPercent[0] * 100) / 100,
-		CpuThreads: logicalCores,
-		TotalMemory: bToGb(vm.Total),
-		MemoryAvailable: bToGb(vm.Available),
-		MemoryUsed: bToGb(vm.Used),
-		MemoryPercentage: math.Trunc(vm.UsedPercent * 100) / 100,
 	}
 }
 

@@ -4,4 +4,6 @@ import {main} from '../models';
 
 export function Greet(arg1:string):Promise<string>;
 
-export function Test():Promise<main.Resources>;
+export function Info():Promise<main.InfoT>;
+
+export function Stats():Promise<main.StatsT>;

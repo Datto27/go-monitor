@@ -6,6 +6,10 @@ export function Greet(arg1) {
   return window['go']['main']['App']['Greet'](arg1);
 }
 
-export function Test() {
-  return window['go']['main']['App']['Test']();
+export function Info() {
+  return window['go']['main']['App']['Info']();
+}
+
+export function Stats() {
+  return window['go']['main']['App']['Stats']();
 }

@@ -1,5 +1,4 @@
 import React from "react";
-import "./App.css";
 import SystemMonitor from "./components/SystemMonitor";
 
 function App() {

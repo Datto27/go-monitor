@@ -8,24 +8,27 @@ import {
   Area,
 } from "recharts";
 import { Monitor, Cpu, HardDrive } from "lucide-react";
-import { Test } from "../../wailsjs/go/main/App";
+import { Info, Stats } from "../../wailsjs/go/main/App";
 import InfoCard from "./InfoCard";
 import CircularProgress from "./CirclePorgress";
 
 type StatsT = {
-  totalMemory: number;
   memoryAvailable: number;
   memoryUsed: number;
   memoryPercentage: number;
-  cpu: number;
   cpuPercentage: number;
+};
+
+type InfoT = {
+  cpu: number;
   cpuThreads: number;
   cpuModel: string;
   cpuCores: number;
   cpuModelName: string;
   cpuGhz: number;
   cpuCacheSize: number;
-};
+  totalMemory: number;
+}
 
 type CpuHistorySegmentT = {
   time: string;
@@ -34,31 +37,43 @@ type CpuHistorySegmentT = {
 
 const SystemMonitor = () => {
   const [stats, setStats] = useState<StatsT | null>(null);
+  const [info, setInfo] = useState<InfoT | null>(null);
   const [cpuHistory, setCpuHistory] = useState<CpuHistorySegmentT[]>([]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      const timeStr = `${now.getHours()}:${now
-        .getMinutes()
-        .toString()
-        .padStart(2, "0")}`;
-
-      Test().then((res) => {
-        setStats(res);
-
-        setCpuHistory((prev) => {
-          const newHistory = [
-            ...prev.slice(-49),
-            { time: timeStr, usage: res.cpuPercentage },
-          ];
-          return newHistory;
-        });
-      });
+    fetchInfo();
+    const inter = setInterval(() => {
+      fetchStats();
     }, 3000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(inter);
   }, []);
+
+  const fetchStats = () => {
+    const now = new Date();
+    const timeStr = `${now.getHours()}:${now
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}`;
+
+    Stats().then((res) => {
+      setStats(res);
+
+      setCpuHistory((prev) => {
+        const newHistory = [
+          ...prev.slice(-49),
+          { time: timeStr, usage: res.cpuPercentage },
+        ];
+        return newHistory;
+      });
+    });
+  }
+
+  const fetchInfo = () => {
+    Info().then((res) => {
+      setInfo(res);
+    });
+  }
 
   return (
     <div className={"container"}>
@@ -141,17 +156,17 @@ const SystemMonitor = () => {
           <InfoCard
             icon={<Cpu color="#3b82f6" />}
             title="CPU Cores"
-            value={`${stats?.cpuCores} cores`}
+            value={`${info?.cpuCores} cores`}
           />
           <InfoCard
             icon={<Cpu color="#8b5cf6" />}
             title="CPU Threads"
-            value={`${stats?.cpuThreads} threads`}
+            value={`${info?.cpuThreads} threads`}
           />
           <InfoCard
             icon={<HardDrive color="#10b981" />}
             title="Total Memory"
-            value={`${stats?.totalMemory} GB`}
+            value={`${info?.totalMemory} GB`}
           />
           <InfoCard
             icon={<Monitor color="#f59e0b" />}
@@ -163,15 +178,15 @@ const SystemMonitor = () => {
           <h2 className={"cpuDetailsTitle"}>CPU Information</h2>
           <div className={"cpuDetailsContent"}>
             <p className={"cpuModelLabel"}>Model</p>
-            <p className={"cpuModelName"}>{stats?.cpuModelName}</p>
+            <p className={"cpuModelName"}>{info?.cpuModelName}</p>
             <div className={"cpuDetailsGrid"}>
               <div className={"cpuDetailItem"}>
                 <p className={"cpuDetailLabel"}>Base Clock</p>
-                <p className={"cpuDetailValue"}>{stats?.cpuGhz} GHz</p>
+                <p className={"cpuDetailValue"}>{info?.cpuGhz} GHz</p>
               </div>
               <div className={"cpuDetailItem"}>
                 <p className={"cpuDetailLabel"}>CPU Cache</p>
-                <p className={"cpuDetailValue"}>{stats?.cpuCacheSize} KB</p>
+                <p className={"cpuDetailValue"}>{info?.cpuCacheSize} KB</p>
               </div>
             </div>
           </div>

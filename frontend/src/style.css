@@ -65,18 +65,18 @@ body {
 .progressCard {
   background-color: #ffffff;
   border-radius: 12px;
-  padding: 32px;
+  padding: 22px;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   border: 1px solid #e5e7eb;
 }
 .progressCardTitle {
-  font-size: 20px;
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 24px;
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 16px 0px;
 }
 .progressCardContent {
   display: flex;
