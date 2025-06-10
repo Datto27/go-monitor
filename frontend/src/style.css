@@ -125,7 +125,7 @@ body {
 .chartCard {
   background-color: #ffffff;
   border-radius: 12px;
-  padding: 32px;
+  padding: 20px;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   border: 1px solid #e5e7eb;
   margin-bottom: 32px;
@@ -167,49 +167,55 @@ body {
   font-weight: 600;
   color: #1f2937;
 }
-.cpuDetailsCard {
+.detailsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 32px;
+  margin-bottom: 32px;
+}
+.detailsCard {
   background-color: #ffffff;
   border-radius: 12px;
-  padding: 32px;
+  padding: 20px;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   border: 1px solid #e5e7eb;
   margin-top: 32px;
 }
-.cpuDetailsTitle {
+.detailsTitle {
   font-size: 20px;
   font-weight: 600;
   color: #1f2937;
   margin-bottom: 16px;
 }
-.cpuDetailsContent {
+.detailsContent {
   background-color: #f9fafb;
   border-radius: 8px;
   padding: 16px;
 }
-.cpuModelLabel {
+.detailLabel {
   font-size: 14px;
   color: #6b7280;
   margin-bottom: 8px;
 }
-.cpuModelName {
+.detailName {
   font-size: 18px;
   font-family: Monaco, Consolas, "Lucida Console", monospace;
   color: #1f2937;
 }
-.cpuDetailsGrid {
+.detailsItemGrid {
   display: flex;
   gap: 48px;
   margin-top: 16px;
 }
-.cpuDetailItem {
+.detailItem {
   display: flex;
   flex-direction: column;
 }
-.cpuDetailLabel {
+.detailLabel {
   font-size: 14px;
   color: #6b7280;
 }
-.cpuDetailValue {
+.detailValue {
   font-size: 18px;
   font-weight: 600;
   color: #1f2937;

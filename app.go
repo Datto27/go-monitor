@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"slices"
 
 	"github.com/shirou/gopsutil/cpu"
+	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/mem"
 )
 
@@ -34,7 +36,8 @@ type StatsT struct {
 	MemoryAvailable float64  `json:"memoryAvailable"`
 	MemoryUsed float64       `json:"memoryUsed"`
 	MemoryPercentage float64 `json:"memoryPercentage"`
-	CpuPercentage float64       `json:"cpuPercentage"`
+	CpuPercentage float64    `json:"cpuPercentage"`
+	CpuTemp float64          `json:"cpuTemp"`
 }
 
 type InfoT struct {
@@ -46,21 +49,43 @@ type InfoT struct {
 	CpuCacheSize int32       `json:"cpuCacheSize"`
 	CPU int32                `json:"cpu"`
 	TotalMemory float64      `json:"totalMemory"`
+	OS string                `json:"OS"`
+	Platform string          `json:"platform"`
+	PlatformVersion string   `json:"platformVersion"`
+}
+
+type TemperatureInfoT struct {
+	SensorName    string  `json:"sensorName"`
+	Temperature   float64 `json:"temperature"`
 }
 
 func (a *App) Stats() StatsT {
+	ctx := context.Background()
 	cpuPercent, err := cpu.Percent(0, false)
 	vm, err := mem.VirtualMemory()
-	
+	temps, err := host.SensorsTemperaturesWithContext(ctx)
+
+	// fmt.Println(temps)
+
 	if err != nil {
 		panic(err)
 	}
+
+	var cpuTemp float64
+
+	for _, temp := range temps {
+		if isCPUSensor(temp.SensorKey) {
+			cpuTemp = temp.Temperature
+		}
+	}
+	fmt.Println("temps: ", cpuTemp)
 
 	return StatsT{
 		CpuPercentage: math.Trunc(cpuPercent[0] * 100) / 100,
 		MemoryAvailable: bToGb(vm.Available),
 		MemoryUsed: bToGb(vm.Used),
 		MemoryPercentage: math.Trunc(vm.UsedPercent * 100) / 100,
+		CpuTemp: cpuTemp,
 	}
 }
 
@@ -68,6 +93,7 @@ func (a *App) Info() InfoT {
 	logicalCores, err := cpu.Counts(true)
 	cpus, err := cpu.Info()
 	vm, err := mem.VirtualMemory()
+	h, err := host.Info()
 
 	if err != nil {
 		panic(err)
@@ -82,9 +108,23 @@ func (a *App) Info() InfoT {
 		CpuCores: cpus[0].Cores,
 		CpuGhz: cpus[0].Mhz / 1000,
 		CpuCacheSize: cpus[0].CacheSize,
+		OS: h.OS,
+		Platform: h.Platform,
+		PlatformVersion: h.PlatformVersion,
 	}
 }
 
 func bToGb(b uint64) float64 {
 	return math.Trunc((float64(b) / 1024 / 1024 / 1024) * 100) / 100
+}
+
+func isCPUSensor(sensorName string) bool {
+	cpuKeywords := []string{
+		"TC0P",
+	}
+	
+	if slices.Contains(cpuKeywords, sensorName) {
+		return true
+	}
+	return false
 }

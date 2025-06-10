@@ -31,8 +31,8 @@ const CircularProgress = ({ percentage = 0, size = 120, strokeWidth = 10, color 
           />
         </svg>
         <div className={'progressText'}>
-          <div className={'progressPercentage'}>{percentage.toFixed(1)}%</div>
-          <div className={'progressValue'}>{value}{unit}</div>
+          <div className={'progressPercentage'}>{percentage.toFixed(1)}{unit}</div>
+          {value && <div className={'progressValue'}>{value}</div>}
         </div>
       </div>
       <div className={'progressLabel'}>{label}</div>

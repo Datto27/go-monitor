@@ -17,6 +17,7 @@ type StatsT = {
   memoryUsed: number;
   memoryPercentage: number;
   cpuPercentage: number;
+  cpuTemp: number;
 };
 
 type InfoT = {
@@ -28,6 +29,9 @@ type InfoT = {
   cpuGhz: number;
   cpuCacheSize: number;
   totalMemory: number;
+  OS: string;
+	platform: string;
+	platformVersion: string;
 }
 
 type CpuHistorySegmentT = {
@@ -44,7 +48,7 @@ const SystemMonitor = () => {
     fetchInfo();
     const inter = setInterval(() => {
       fetchStats();
-    }, 3000);
+    }, 2000);
 
     return () => clearInterval(inter);
   }, []);
@@ -61,7 +65,7 @@ const SystemMonitor = () => {
 
       setCpuHistory((prev) => {
         const newHistory = [
-          ...prev.slice(-49),
+          ...prev.slice(-79),
           { time: timeStr, usage: res.cpuPercentage },
         ];
         return newHistory;
@@ -73,6 +77,20 @@ const SystemMonitor = () => {
     Info().then((res) => {
       setInfo(res);
     });
+  }
+
+  const tempColor = (temp: number) => {
+    if (temp < 45) {
+      return '#94e864';
+    } else if (temp < 55) {
+      return '#e3e352';
+    } else if (temp < 70) {
+      return '#e3ae52';
+    } else if (temp < 85) {
+      return '#e35952';
+    } else {
+      return '#c20a0a';
+    }
   }
 
   return (
@@ -102,7 +120,7 @@ const SystemMonitor = () => {
                 percentage={stats?.cpuPercentage}
                 color="#3b82f6"
                 label="CPU Load"
-                value={`${stats?.cpuPercentage}`}
+                value={`${stats?.cpuPercentage}%`}
                 unit="%"
                 size={140}
               />
@@ -120,8 +138,25 @@ const SystemMonitor = () => {
                 percentage={stats?.memoryPercentage}
                 color="#10b981"
                 label="Memory Used"
-                value={`${stats?.memoryUsed}`}
-                unit=" GB"
+                value={`${stats?.memoryUsed}GB`}
+                unit=" %"
+                size={140}
+              />
+            </div>
+          </div>
+          <div className={"progressCard"}>
+            <h2 className={"progressCardTitle"}>
+              <Cpu
+                style={{ width: "20px", height: "20px", color: tempColor(stats?.cpuTemp ?? 0) }}
+              />
+              CPU Temperature
+            </h2>
+            <div className={"progressCardContent"}>
+              <CircularProgress
+                percentage={stats?.cpuTemp}
+                color={tempColor(stats?.cpuTemp ?? 0)}
+                label="CPU Temperature"
+                unit=" °C"
                 size={140}
               />
             </div>
@@ -139,8 +174,8 @@ const SystemMonitor = () => {
                   type="monotone"
                   dataKey="usage"
                   stroke="#3b82f6"
-                  strokeWidth={2}
-                  dot={{ fill: "#3b82f6", strokeWidth: 1, r: 3 }}
+                  strokeWidth={1}
+                  dot={{ fill: "#3b82f6", strokeWidth: 1, r: 2 }}
                   activeDot={{
                     r: 3,
                     stroke: "#3b82f6",
@@ -174,19 +209,36 @@ const SystemMonitor = () => {
             value={`${stats?.memoryAvailable} GB`}
           />
         </div>
-        <div className={"cpuDetailsCard"}>
-          <h2 className={"cpuDetailsTitle"}>CPU Information</h2>
-          <div className={"cpuDetailsContent"}>
-            <p className={"cpuModelLabel"}>Model</p>
-            <p className={"cpuModelName"}>{info?.cpuModelName}</p>
-            <div className={"cpuDetailsGrid"}>
-              <div className={"cpuDetailItem"}>
-                <p className={"cpuDetailLabel"}>Base Clock</p>
-                <p className={"cpuDetailValue"}>{info?.cpuGhz} GHz</p>
+        <div className="detailsGrid">
+          <div className={"detailsCard"}>
+            <h2 className={"detailsTitle"}>CPU Information</h2>
+            <div className={"detailsContent"}>
+              <p className={"detailLabel"}>Model</p>
+              <p className={"detailName"}>{info?.cpuModelName}</p>
+              <div className={"detailsItemGrid"}>
+                <div className={"detailItem"}>
+                  <p className={"detailLabel"}>Base Clock</p>
+                  <p className={"detailValue"}>{info?.cpuGhz} GHz</p>
+                </div>
+                <div className={"detailItem"}>
+                  <p className={"detailLabel"}>CPU Cache</p>
+                  <p className={"detailValue"}>{info?.cpuCacheSize} KB</p>
+                </div>
               </div>
-              <div className={"cpuDetailItem"}>
-                <p className={"cpuDetailLabel"}>CPU Cache</p>
-                <p className={"cpuDetailValue"}>{info?.cpuCacheSize} KB</p>
+            </div>
+          </div>
+          <div className={"detailsCard"}>
+            <h2 className={"detailsTitle"}>System Information</h2>
+            <div className={"detailsContent"}>
+              <div className={"detailsItemGrid"}>
+                <div className="detailItem">
+                  <p className={"detailLabel"}>OS</p>
+                  <p className={"detailName"}>{info?.platform}</p>
+                </div>
+                <div className={"detailItem"}>
+                  <p className={"detailLabel"}>OS Version</p>
+                  <p className={"detailValue"}>{info?.platformVersion}</p>
+                </div>
               </div>
             </div>
           </div>

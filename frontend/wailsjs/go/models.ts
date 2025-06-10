@@ -9,6 +9,9 @@ export namespace main {
 	    cpuCacheSize: number;
 	    cpu: number;
 	    totalMemory: number;
+	    OS: string;
+	    platform: string;
+	    platformVersion: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new InfoT(source);
@@ -24,6 +27,9 @@ export namespace main {
 	        this.cpuCacheSize = source["cpuCacheSize"];
 	        this.cpu = source["cpu"];
 	        this.totalMemory = source["totalMemory"];
+	        this.OS = source["OS"];
+	        this.platform = source["platform"];
+	        this.platformVersion = source["platformVersion"];
 	    }
 	}
 	export class StatsT {
@@ -31,6 +37,7 @@ export namespace main {
 	    memoryUsed: number;
 	    memoryPercentage: number;
 	    cpuPercentage: number;
+	    cpuTemp: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new StatsT(source);
@@ -42,6 +49,7 @@ export namespace main {
 	        this.memoryUsed = source["memoryUsed"];
 	        this.memoryPercentage = source["memoryPercentage"];
 	        this.cpuPercentage = source["cpuPercentage"];
+	        this.cpuTemp = source["cpuTemp"];
 	    }
 	}
 
