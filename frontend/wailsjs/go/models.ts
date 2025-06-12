@@ -55,3 +55,40 @@ export namespace main {
 
 }
 
+export namespace net {
+	
+	export class IOCountersStat {
+	    name: string;
+	    bytesSent: number;
+	    bytesRecv: number;
+	    packetsSent: number;
+	    packetsRecv: number;
+	    errin: number;
+	    errout: number;
+	    dropin: number;
+	    dropout: number;
+	    fifoin: number;
+	    fifoout: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new IOCountersStat(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.bytesSent = source["bytesSent"];
+	        this.bytesRecv = source["bytesRecv"];
+	        this.packetsSent = source["packetsSent"];
+	        this.packetsRecv = source["packetsRecv"];
+	        this.errin = source["errin"];
+	        this.errout = source["errout"];
+	        this.dropin = source["dropin"];
+	        this.dropout = source["dropout"];
+	        this.fifoin = source["fifoin"];
+	        this.fifoout = source["fifoout"];
+	    }
+	}
+
+}
+

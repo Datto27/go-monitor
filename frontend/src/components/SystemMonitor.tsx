@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   XAxis,
   YAxis,
@@ -6,9 +6,11 @@ import {
   ResponsiveContainer,
   AreaChart,
   Area,
+  Legend,
+  Tooltip,
 } from "recharts";
 import { Monitor, Cpu, HardDrive } from "lucide-react";
-import { Info, Stats } from "../../wailsjs/go/main/App";
+import { Info, NetStats, Stats } from "../../wailsjs/go/main/App";
 import InfoCard from "./InfoCard";
 import CircularProgress from "./CirclePorgress";
 
@@ -30,9 +32,9 @@ type InfoT = {
   cpuCacheSize: number;
   totalMemory: number;
   OS: string;
-	platform: string;
-	platformVersion: string;
-}
+  platform: string;
+  platformVersion: string;
+};
 
 type CpuHistorySegmentT = {
   time: string;
@@ -43,12 +45,28 @@ const SystemMonitor = () => {
   const [stats, setStats] = useState<StatsT | null>(null);
   const [info, setInfo] = useState<InfoT | null>(null);
   const [cpuHistory, setCpuHistory] = useState<CpuHistorySegmentT[]>([]);
-
+  const [netHistory, setNetHistory] = useState([
+      {
+        time: "",
+        bytesRecv: 0,
+        bytesSent: 0,
+      },
+    ]);
+  const totalRecv = useRef(0);
+  const totalSent = useRef(0);
+  
   useEffect(() => {
+    let netTimeout = 0;
     fetchInfo();
     const inter = setInterval(() => {
       fetchStats();
-    }, 2000);
+      if (netTimeout === 3) {
+        fetchNetStats();
+        netTimeout = 0;
+      } else {
+        netTimeout += 1; 
+      }
+    }, 3000);
 
     return () => clearInterval(inter);
   }, []);
@@ -71,27 +89,52 @@ const SystemMonitor = () => {
         return newHistory;
       });
     });
+  };
+
+  const fetchNetStats = () => {
+    const now = new Date();
+    const timeStr = `${now.getHours()}:${now
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}`;
+
+    NetStats().then((res) => {
+      console.log('out: ', res?.bytesSent, totalSent.current, res?.bytesSent - totalSent.current)
+      setNetHistory((prev) => {
+        const newHistory =  [
+            ...prev.slice(-79),
+            {
+              time: timeStr,
+              bytesRecv: parseFloat(((res?.bytesRecv - totalRecv.current) / 1000).toFixed(2)),
+              bytesSent: parseFloat(((res?.bytesSent - totalSent.current) / 1000).toFixed(2)),
+            },
+          ];
+        totalRecv.current = res.bytesRecv;
+        totalSent.current = res.bytesSent;
+        return newHistory;
+      });
+    })
   }
 
   const fetchInfo = () => {
     Info().then((res) => {
       setInfo(res);
     });
-  }
+  };
 
   const tempColor = (temp: number) => {
     if (temp < 45) {
-      return '#94e864';
+      return "#94e864";
     } else if (temp < 55) {
-      return '#e3e352';
+      return "#e3e352";
     } else if (temp < 70) {
-      return '#e3ae52';
+      return "#e3ae52";
     } else if (temp < 85) {
-      return '#e35952';
+      return "#e35952";
     } else {
-      return '#c20a0a';
+      return "#c20a0a";
     }
-  }
+  };
 
   return (
     <div className={"container"}>
@@ -147,7 +190,11 @@ const SystemMonitor = () => {
           <div className={"progressCard"}>
             <h2 className={"progressCardTitle"}>
               <Cpu
-                style={{ width: "20px", height: "20px", color: tempColor(stats?.cpuTemp ?? 0) }}
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  color: tempColor(stats?.cpuTemp ?? 0),
+                }}
               />
               CPU Temperature
             </h2>
@@ -169,16 +216,91 @@ const SystemMonitor = () => {
               <AreaChart data={cpuHistory}>
                 <CartesianGrid strokeDasharray="4 4" stroke="#f0f0f0" />
                 <XAxis dataKey="time" stroke="#6b7280" fontSize={12} />
-                <YAxis stroke="#6b7280" fontSize={12} domain={[0, 100]} />
+                <YAxis stroke="#6b7280" fontSize={12} domain={[0, 100]}
+                  tickFormatter={(value) => `${value}%`}
+                />
+                <Tooltip
+                  animationDuration={300}
+                  formatter={(value, name) => [`${value}%`, 'CPU usage']}
+                  labelFormatter={(label) => `Time: ${label}`}
+                  contentStyle={{
+                    backgroundColor: 'rgb(154, 160, 167)',
+                    border: '1px solid rgb(118, 123, 129)',
+                    borderRadius: '10px',
+                    fontSize: '12px',
+                    textAlign: 'start',
+                  }}
+                />
                 <Area
                   type="monotone"
                   dataKey="usage"
                   stroke="#3b82f6"
                   strokeWidth={1}
-                  dot={{ fill: "#3b82f6", strokeWidth: 1, r: 2 }}
+                  dot={{ fill: "#3b82f6", strokeWidth: 1, r: 1 }}
                   activeDot={{
-                    r: 3,
+                    r: 1.5,
                     stroke: "#3b82f6",
+                    strokeWidth: 1,
+                    fill: "#ffffff",
+                  }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <div className={"chartCard"}>
+          <h2 className={"chartTitle"}>Network Usage</h2>
+          <div className={"chartContainer"}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={netHistory}>
+                <CartesianGrid strokeDasharray="4 4" stroke="#f0f0f0" />
+                <XAxis dataKey="time" stroke="#6b7280" fontSize={12} />
+                <YAxis  stroke="#6b7280" fontSize={12}
+                  tickFormatter={(value) => `${value}Kb`}
+                />
+                <Legend
+                  formatter={(value) => value === 'bytesSent' ? 'Sent' : 'Received'}
+                />
+                <Tooltip
+                  animationDuration={300}
+                  formatter={(value, name) => [`${value}Kb`, name === 'bytesSent' ? 'Sent' : 'Received']}
+                  labelFormatter={(label) => `Time: ${label}`}
+                  contentStyle={{
+                    backgroundColor: 'rgb(154, 160, 167)',
+                    border: '1px solid rgb(118, 123, 129)',
+                    borderRadius: '10px',
+                    fontSize: '12px',
+                    textAlign: 'start',
+                  }}
+                />
+                <Area
+                  type="linear"
+                  label="Sent"
+                  dataKey="bytesSent"
+                  stroke="#94e864"
+                  fill="#94e864"
+                  fillOpacity={0.2}
+                  strokeWidth={1}
+                  dot={{ fill: "#14fc24", strokeWidth: 1, r: 1 }}
+                  activeDot={{
+                    r: 1.5,
+                    stroke: "#14fc24",
+                    strokeWidth: 1,
+                    fill: "#ffffff",
+                  }}
+                />
+                <Area
+                  type="linear"
+                  label="Recived"
+                  dataKey="bytesRecv"
+                  stroke="#e3ae52"
+                  fill="#e3ae52"
+                  fillOpacity={0.2}
+                  strokeWidth={1}
+                  dot={{ fill: "#f29d0a", strokeWidth: 1, r: 1 }}
+                  activeDot={{
+                    r: 1.5,
+                    stroke: "#f29d0a",
                     strokeWidth: 1,
                     fill: "#ffffff",
                   }}

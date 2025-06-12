@@ -10,6 +10,10 @@ export function Info() {
   return window['go']['main']['App']['Info']();
 }
 
+export function NetStats() {
+  return window['go']['main']['App']['NetStats']();
+}
+
 export function Stats() {
   return window['go']['main']['App']['Stats']();
 }

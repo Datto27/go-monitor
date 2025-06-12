@@ -9,6 +9,7 @@ import (
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/mem"
+	"github.com/shirou/gopsutil/net"
 )
 
 // App struct
@@ -33,11 +34,11 @@ func (a *App) Greet(name string) string {
 }
 
 type StatsT struct {
-	MemoryAvailable float64  `json:"memoryAvailable"`
-	MemoryUsed float64       `json:"memoryUsed"`
-	MemoryPercentage float64 `json:"memoryPercentage"`
-	CpuPercentage float64    `json:"cpuPercentage"`
-	CpuTemp float64          `json:"cpuTemp"`
+	MemoryAvailable float64    `json:"memoryAvailable"`
+	MemoryUsed float64         `json:"memoryUsed"`
+	MemoryPercentage float64   `json:"memoryPercentage"`
+	CpuPercentage float64      `json:"cpuPercentage"`
+	CpuTemp float64            `json:"cpuTemp"`
 }
 
 type InfoT struct {
@@ -65,8 +66,6 @@ func (a *App) Stats() StatsT {
 	vm, err := mem.VirtualMemory()
 	temps, err := host.SensorsTemperaturesWithContext(ctx)
 
-	// fmt.Println(temps)
-
 	if err != nil {
 		panic(err)
 	}
@@ -87,6 +86,16 @@ func (a *App) Stats() StatsT {
 		MemoryPercentage: math.Trunc(vm.UsedPercent * 100) / 100,
 		CpuTemp: cpuTemp,
 	}
+}
+
+func (a *App) NetStats() net.IOCountersStat  {
+	netIO, err := net.IOCounters(false)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return netIO[0]
 }
 
 func (a *App) Info() InfoT {

@@ -4,9 +4,9 @@ import React from "react";
 const InfoCard = ({ icon = <Cpu color="white" />, title = '', value = '' }) => (
   <div className={'infoCard'}>
     {icon}
-    <div>
-      <div className={'infoCardTitle'}>{title}</div>
-      <div className={'infoCardValue'}>{value}</div>
+    <div className={'info'}>
+      <p className={'infoCardTitle'}>{title}</p>
+      <p className={'infoCardValue'}>{value}</p>
     </div>
   </div>
 );
