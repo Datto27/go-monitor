@@ -38,6 +38,7 @@ export namespace main {
 	    memoryPercentage: number;
 	    cpuPercentage: number;
 	    cpuTemp: number;
+	    sysTemp: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new StatsT(source);
@@ -50,6 +51,7 @@ export namespace main {
 	        this.memoryPercentage = source["memoryPercentage"];
 	        this.cpuPercentage = source["cpuPercentage"];
 	        this.cpuTemp = source["cpuTemp"];
+	        this.sysTemp = source["sysTemp"];
 	    }
 	}
 

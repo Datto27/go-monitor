@@ -9,7 +9,7 @@ import {
   Legend,
   Tooltip,
 } from "recharts";
-import { Monitor, Cpu, HardDrive } from "lucide-react";
+import { Monitor, Cpu, HardDrive, Computer } from "lucide-react";
 import { Info, NetStats, Stats } from "../../wailsjs/go/main/App";
 import InfoCard from "./InfoCard";
 import CircularProgress from "./CirclePorgress";
@@ -20,6 +20,7 @@ type StatsT = {
   memoryPercentage: number;
   cpuPercentage: number;
   cpuTemp: number;
+  sysTemp: number;
 };
 
 type InfoT = {
@@ -46,15 +47,15 @@ const SystemMonitor = () => {
   const [info, setInfo] = useState<InfoT | null>(null);
   const [cpuHistory, setCpuHistory] = useState<CpuHistorySegmentT[]>([]);
   const [netHistory, setNetHistory] = useState([
-      {
-        time: "",
-        bytesRecv: 0,
-        bytesSent: 0,
-      },
-    ]);
+    {
+      time: "",
+      bytesRecv: 0,
+      bytesSent: 0,
+    },
+  ]);
   const totalRecv = useRef(0);
   const totalSent = useRef(0);
-  
+
   useEffect(() => {
     let netTimeout = 0;
     fetchInfo();
@@ -64,7 +65,7 @@ const SystemMonitor = () => {
         fetchNetStats();
         netTimeout = 0;
       } else {
-        netTimeout += 1; 
+        netTimeout += 1;
       }
     }, 3000);
 
@@ -99,22 +100,31 @@ const SystemMonitor = () => {
       .padStart(2, "0")}`;
 
     NetStats().then((res) => {
-      console.log('out: ', res?.bytesSent, totalSent.current, res?.bytesSent - totalSent.current)
+      console.log(
+        "out: ",
+        res?.bytesSent,
+        totalSent.current,
+        res?.bytesSent - totalSent.current
+      );
       setNetHistory((prev) => {
-        const newHistory =  [
-            ...prev.slice(-79),
-            {
-              time: timeStr,
-              bytesRecv: parseFloat(((res?.bytesRecv - totalRecv.current) / 1000).toFixed(2)),
-              bytesSent: parseFloat(((res?.bytesSent - totalSent.current) / 1000).toFixed(2)),
-            },
-          ];
+        const newHistory = [
+          ...prev.slice(-79),
+          {
+            time: timeStr,
+            bytesRecv: parseFloat(
+              ((res?.bytesRecv - totalRecv.current) / 1000).toFixed(2)
+            ),
+            bytesSent: parseFloat(
+              ((res?.bytesSent - totalSent.current) / 1000).toFixed(2)
+            ),
+          },
+        ];
         totalRecv.current = res.bytesRecv;
         totalSent.current = res.bytesSent;
         return newHistory;
       });
-    })
-  }
+    });
+  };
 
   const fetchInfo = () => {
     Info().then((res) => {
@@ -187,27 +197,51 @@ const SystemMonitor = () => {
               />
             </div>
           </div>
-          <div className={"progressCard"}>
-            <h2 className={"progressCardTitle"}>
-              <Cpu
-                style={{
-                  width: "20px",
-                  height: "20px",
-                  color: tempColor(stats?.cpuTemp ?? 0),
-                }}
-              />
-              CPU Temperature
-            </h2>
-            <div className={"progressCardContent"}>
-              <CircularProgress
-                percentage={stats?.cpuTemp}
-                color={tempColor(stats?.cpuTemp ?? 0)}
-                label="CPU Temperature"
-                unit=" °C"
-                size={140}
-              />
+          {stats?.cpuTemp ? (
+            <div className={"progressCard"}>
+              <h2 className={"progressCardTitle"}>
+                <Cpu
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                    color: tempColor(stats?.cpuTemp ?? 0),
+                  }}
+                />
+                CPU Temperature
+              </h2>
+              <div className={"progressCardContent"}>
+                <CircularProgress
+                  percentage={stats?.cpuTemp}
+                  color={tempColor(stats?.cpuTemp ?? 0)}
+                  label="CPU Temperature"
+                  unit=" °C"
+                  size={140}
+                />
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className={"progressCard"}>
+              <h2 className={"progressCardTitle"}>
+                <Computer
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                    color: tempColor(stats?.sysTemp ?? 0),
+                  }}
+                />
+                System Temperature
+              </h2>
+              <div className={"progressCardContent"}>
+                <CircularProgress
+                  percentage={stats?.sysTemp}
+                  color={tempColor(stats?.sysTemp ?? 0)}
+                  label="System Temperature"
+                  unit=" °C"
+                  size={140}
+                />
+              </div>
+            </div>
+          )}
         </div>
         <div className={"chartCard"}>
           <h2 className={"chartTitle"}>CPU Usage History</h2>
@@ -216,19 +250,22 @@ const SystemMonitor = () => {
               <AreaChart data={cpuHistory}>
                 <CartesianGrid strokeDasharray="4 4" stroke="#f0f0f0" />
                 <XAxis dataKey="time" stroke="#6b7280" fontSize={12} />
-                <YAxis stroke="#6b7280" fontSize={12} domain={[0, 100]}
+                <YAxis
+                  stroke="#6b7280"
+                  fontSize={12}
+                  domain={[0, 100]}
                   tickFormatter={(value) => `${value}%`}
                 />
                 <Tooltip
                   animationDuration={300}
-                  formatter={(value, name) => [`${value}%`, 'CPU usage']}
+                  formatter={(value, name) => [`${value}%`, "CPU usage"]}
                   labelFormatter={(label) => `Time: ${label}`}
                   contentStyle={{
-                    backgroundColor: 'rgb(154, 160, 167)',
-                    border: '1px solid rgb(118, 123, 129)',
-                    borderRadius: '10px',
-                    fontSize: '12px',
-                    textAlign: 'start',
+                    backgroundColor: "rgb(154, 160, 167)",
+                    border: "1px solid rgb(118, 123, 129)",
+                    borderRadius: "10px",
+                    fontSize: "12px",
+                    textAlign: "start",
                   }}
                 />
                 <Area
@@ -255,22 +292,29 @@ const SystemMonitor = () => {
               <AreaChart data={netHistory}>
                 <CartesianGrid strokeDasharray="4 4" stroke="#f0f0f0" />
                 <XAxis dataKey="time" stroke="#6b7280" fontSize={12} />
-                <YAxis  stroke="#6b7280" fontSize={12}
+                <YAxis
+                  stroke="#6b7280"
+                  fontSize={12}
                   tickFormatter={(value) => `${value}Kb`}
                 />
                 <Legend
-                  formatter={(value) => value === 'bytesSent' ? 'Sent' : 'Received'}
+                  formatter={(value) =>
+                    value === "bytesSent" ? "Sent" : "Received"
+                  }
                 />
                 <Tooltip
                   animationDuration={300}
-                  formatter={(value, name) => [`${value}Kb`, name === 'bytesSent' ? 'Sent' : 'Received']}
+                  formatter={(value, name) => [
+                    `${value}Kb`,
+                    name === "bytesSent" ? "Sent" : "Received",
+                  ]}
                   labelFormatter={(label) => `Time: ${label}`}
                   contentStyle={{
-                    backgroundColor: 'rgb(154, 160, 167)',
-                    border: '1px solid rgb(118, 123, 129)',
-                    borderRadius: '10px',
-                    fontSize: '12px',
-                    textAlign: 'start',
+                    backgroundColor: "rgb(154, 160, 167)",
+                    border: "1px solid rgb(118, 123, 129)",
+                    borderRadius: "10px",
+                    fontSize: "12px",
+                    textAlign: "start",
                   }}
                 />
                 <Area
