@@ -71,6 +71,8 @@ func (a *App) Stats() StatsT {
 		panic(err)
 	}
 
+	fmt.Println("temps", temps)
+
 	var cpuTemp float64
 	var sysTemp float64
 	for _, temp := range temps {

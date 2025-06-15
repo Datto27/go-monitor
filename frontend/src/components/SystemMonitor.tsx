@@ -57,17 +57,17 @@ const SystemMonitor = () => {
   const totalSent = useRef(0);
 
   useEffect(() => {
-    let netTimeout = 0;
+    let netTimeout = 4;
     fetchInfo();
     const inter = setInterval(() => {
       fetchStats();
-      if (netTimeout === 3) {
+      if (netTimeout === 4) {
         fetchNetStats();
         netTimeout = 0;
       } else {
         netTimeout += 1;
       }
-    }, 3000);
+    }, 2000);
 
     return () => clearInterval(inter);
   }, []);
