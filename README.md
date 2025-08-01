@@ -1,19 +1,18 @@
-# README
+# Go Monitor
+- Desktop application for system monitoring
+- Displayed system data
+  * Cpu live usage
+  * Memory live usage
+  * Cpu temperature
+  * Cpu usage history
+  * Network usage
+  * Total and used memory
+  * Cpu information
+  * Overall system info
 
-## About
-
-This is the official Wails React-TS template.
-
-You can configure the project by editing `wails.json`. More information about the project settings can be found
-here: https://wails.io/docs/reference/project-config
-
-## Live Development
-
-To run in live development mode, run `wails dev` in the project directory. This will run a Vite development
-server that will provide very fast hot reload of your frontend changes. If you want to develop in a browser
-and have access to your Go methods, there is also a dev server that runs on http://localhost:34115. Connect
-to this in your browser, and you can call your Go code from devtools.
-
-## Building
-
-To build a redistributable, production mode package, use `wails build`.
+# Showcase
+<div style="display: flex; flex-flow: row wrap; justify-content: space-between">
+  <img src="./assets/live_usage.png" style="width: 30%" />
+  <img src="./assets/temp.png" style="width: 30%" />
+  <img src="./assets/network.png" style="width: 30%" />
+</div>

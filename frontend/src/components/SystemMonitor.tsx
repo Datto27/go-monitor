@@ -100,12 +100,12 @@ const SystemMonitor = () => {
       .padStart(2, "0")}`;
 
     NetStats().then((res) => {
-      console.log(
-        "out: ",
-        res?.bytesSent,
-        totalSent.current,
-        res?.bytesSent - totalSent.current
-      );
+      if (totalRecv.current === 0 && totalSent.current === 0) {
+        totalRecv.current = res.bytesRecv;
+        totalSent.current = res.bytesSent;
+        return;
+      }
+
       setNetHistory((prev) => {
         const newHistory = [
           ...prev.slice(-79),
