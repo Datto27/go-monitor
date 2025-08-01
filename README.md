@@ -11,7 +11,7 @@
   * Overall system info
 
 # Showcase
-<div style="display: flex; flex-flow: row wrap; justify-content: space-between">
+<div style="display: flex; flex-flow: row wrap; justify-content: space-between; align-items: flex-start; width: 100%;">
   <img src="./assets/live_usage.png" style="width: 30%" />
   <img src="./assets/temp.png" style="width: 30%" />
   <img src="./assets/network.png" style="width: 30%" />
