@@ -13,7 +13,7 @@ const CircularProgress = ({ percentage = 0, size = 120, strokeWidth = 10, color 
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="#e5e7eb"
+            stroke="rgba(48,54,61,0.9)"
             strokeWidth={strokeWidth}
             fill="transparent"
           />
