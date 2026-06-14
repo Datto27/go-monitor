@@ -85,8 +85,12 @@ go-monitor/
 
 ## Showcase
 
-<div style="display: flex; flex-flow: row wrap; justify-content: space-between; align-items: flex-start; width: 100%;">
-  <img src="./assets/live_usage.png" style="width: 30%" />
-  <img src="./assets/temp.png" style="width: 30%" />
+<div style="display: flex; flex-flow: row wrap; justify-content: space-between; align-items: flex-start; width: 100%; margin-bottom: 50px;">
+  <img src="./assets/overview.png" style="width: 30%" />
+  <img src="./assets/cpu.png" style="width: 30%" />
   <img src="./assets/network.png" style="width: 30%" />
 </div>
+
+The floating widget overlay:
+
+<img src="./assets/widget.png" style="width: 30%" />
